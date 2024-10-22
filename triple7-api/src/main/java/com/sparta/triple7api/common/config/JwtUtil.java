@@ -1,7 +1,6 @@
 package com.sparta.triple7api.common.config;
 
-import com.sparta.sal.common.exception.ServerException;
-import com.sparta.sal.domain.user.enums.UserRole;
+import com.sparta.triple7api.common.exception.ServerException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -43,53 +42,50 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
-    public String createToken(Long userId, String email, UserRole userRole) {
-        Date date = new Date();
+    public String createToken(Long userId, String email) {
+        Date now = new Date();
 
         return BEARER_PREFIX +
                 Jwts.builder()
                         .setSubject(String.valueOf(userId))
                         .claim("email", email)
-                        .claim("userRole", userRole)
-                        .setExpiration(new Date(date.getTime() + TOKEN_TIME))
-                        .setIssuedAt(date) // 발급일
+                        .setExpiration(new Date(now.getTime() + TOKEN_TIME))
+                        .setIssuedAt(now) // 발급일
                         .signWith(key, signatureAlgorithm) // 암호화 알고리즘
                         .compact();
     }
 
     public String substringToken(String tokenValue) {
         if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)) {
-            return tokenValue.substring(7);
+            return tokenValue.substring(BEARER_PREFIX.length());
         }
         throw new ServerException("Not Found Token");
     }
 
-    // 쿠키에 토큰 넣기
     public void addJwtToCookie(String token) {
         try {
-            String encodeToken = URLEncoder.encode(token, "utf-8").replaceAll("\\+", "%20"); // Cookie Value 에는 공백이 불가능해서 encoding 진행
+            String encodedToken = URLEncoder.encode(token, "UTF-8").replaceAll("\\+", "%20");
 
-            Cookie cookie = new Cookie("Authorization", encodeToken); // Name-Value
-            cookie.setHttpOnly(true); // 자바스크립트에서 쿠키에 접근할 수 없도록 설정
-            cookie.setMaxAge(60 * 60); // 쿠키의 유효 기간 설정(1시간)
+            Cookie cookie = new Cookie("Authorization", encodedToken);
+            cookie.setHttpOnly(true);
+            cookie.setMaxAge(60 * 60);
             cookie.setPath("/");
 
-            // Response 객체에 Cookie 추가
             httpServletResponse.addCookie(cookie);
         } catch (UnsupportedEncodingException e) {
             log.error("JWT 쿠키 생성 중 에러 발생", e.getMessage());
         }
     }
 
-    // HttpServletRequest 에서 Cookie Value : JWT 가져오기
     public String getTokenFromRequest(HttpServletRequest req) {
         Cookie[] cookies = req.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("Authorization")) {
+                if ("Authorization".equals(cookie.getName())) {
                     try {
-                        return URLDecoder.decode(cookie.getValue(), "UTF-8"); // Encode 되어 넘어간 Value 다시 Decode
+                        return URLDecoder.decode(cookie.getValue(), "UTF-8");
                     } catch (UnsupportedEncodingException e) {
+                        log.error("JWT 디코딩 중 에러 발생", e.getMessage());
                         return null;
                     }
                 }

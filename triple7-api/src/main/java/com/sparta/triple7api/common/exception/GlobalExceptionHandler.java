@@ -1,6 +1,6 @@
 package com.sparta.triple7api.common.exception;
 
-import com.sparta.sal.common.dto.ExceptionResponse;
+import com.sparta.triple7api.common.dto.ExceptionResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
