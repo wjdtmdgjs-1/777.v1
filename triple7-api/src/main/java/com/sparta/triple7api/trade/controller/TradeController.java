@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/cryptos")
@@ -23,4 +25,16 @@ public class TradeController {
         return ResponseEntity.ok(tradeService.postTrade(authUser,cryptoId,tradeRequestDto));
     }
 
+    @PostMapping("/")
+
+    @GetMapping("/{cryptoId}/trades")
+    public ResponseEntity<List<TradeResponseDto>> getTradeList(@AuthenticationPrincipal AuthUser authUser,
+                                                           @PathVariable long cryptoId){
+        return ResponseEntity.ok(tradeService.getTradeList(authUser,cryptoId));
+    }
+
+    @GetMapping("/trades")
+    public ResponseEntity<List<TradeResponseDto>> getAllTradeList(@AuthenticationPrincipal AuthUser authUser){
+        return ResponseEntity.ok(tradeService.getAllTradeList(authUser));
+    }
 }

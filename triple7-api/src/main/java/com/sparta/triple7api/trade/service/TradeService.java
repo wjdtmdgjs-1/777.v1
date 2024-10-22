@@ -12,42 +12,68 @@ import com.sparta.triple7api.trade.repository.TradeRepository;
 import com.sparta.triple7api.user.entity.User;
 import com.sparta.triple7api.user.repository.UserRepository;
 import com.sparta.triple7api.user.service.UserService;
+import com.sparta.triple7api.wallet.entity.Wallet;
+import com.sparta.triple7api.wallet.repository.WalletRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class TradeService {
     private final TradeRepository tradeRepository;
     private final UserRepository userRepository;
     private final CryptoRepository cryptoRepository;
+    private final WalletRepository walletRepository;
     private final RedisTemplate<String, Long> redisTemplate;
 
+    @Transactional
     public TradeResponseDto postTrade(AuthUser authUser, long cryptoId, TradeRequestDto tradeRequestDto) {
         User user = userRepository.findById(authUser.getId()).orElseThrow(()->new NullPointerException("no such user"));
         Crypto crypto = cryptoRepository.findById(cryptoId).orElseThrow(()->new NullPointerException("no such crypto"));
 
         Long price = Optional.ofNullable(redisTemplate.opsForValue().get(crypto.getSymbol())).orElse(0L);
 
-        Wallet wallet = walletRepository.findByUserIDAndCryptoSymbol(user.getId(),crypto.getSymbol());
+        Wallet wallet = walletRepository.findByUserIdAndCryptoSymbol(user.getId(),crypto.getSymbol());
         if(tradeRequestDto.getTradeType().equals(TradeType.Authority.BUY)){
-            if(wallet.getCash < price*tradeRequestDto.getAmount()) {
+            if(wallet.getCash() < price*tradeRequestDto.getAmount()) {
                 throw new InvalidRequestException("no such money");
             }
-            wallet.update(wallet.getAmount + tradeRequestDto.getAmount(),wallet.getCash(),
+            wallet.update(wallet.getAmount() + tradeRequestDto.getAmount(),
                     wallet.getCash() - price * tradeRequestDto.getAmount());
         }else if(tradeRequestDto.getTradeType().equals(TradeType.Authority.SELL)){
-            if(wallet.getAmount < tradeRequestDto.getAmount()){
+            if(wallet.getAmount() < tradeRequestDto.getAmount()){
                 throw new InvalidRequestException("no such amount");
             }
-            wallet.update((wallet.getAmount - tradeRequestDto.getAmount()),
+            wallet.update((wallet.getAmount() - tradeRequestDto.getAmount()),
                     wallet.getCash() + (price * tradeRequestDto.getAmount()));
         }
         Trade trade = new Trade(user,crypto,tradeRequestDto.getTradeType(),tradeRequestDto.getAmount(),price,price * tradeRequestDto.getAmount());
         tradeRepository.save(trade);
         return new TradeResponseDto(crypto.getSymbol(),tradeRequestDto.getAmount(),tradeRequestDto.getTradeType(),price * tradeRequestDto.getAmount());
     }
+
+
+
+    public List<TradeResponseDto> getTradeList(AuthUser authUser, long cryptoId) {
+        User user = userRepository.findById(authUser.getId()).orElseThrow(()->new NullPointerException("no such user"));
+        Crypto crypto = cryptoRepository.findById(cryptoId).orElseThrow(()->new NullPointerException("no such crypto"));
+        List<Trade> tradeList = tradeRepository.findAllByCryptoAndUser(crypto,user);
+
+        return tradeList.stream().map(Trade->new TradeResponseDto(Trade.getCrypto().getSymbol(),Trade.getAmount(),String.valueOf(Trade.getTradeType()),Trade.getPrice())).toList();
+    }
+
+
+    public List<TradeResponseDto> getAllTradeList(AuthUser authUser) {
+        User user = userRepository.findById(authUser.getId()).orElseThrow(()->new NullPointerException("no such user"));
+        List<Trade> tradeList = tradeRepository.findAllByUser(user);
+
+        return tradeList.stream().map(Trade->new TradeResponseDto(Trade.getCrypto().getSymbol(),Trade.getAmount(),String.valueOf(Trade.getTradeType()),Trade.getPrice())).toList();
+    }
+
 }

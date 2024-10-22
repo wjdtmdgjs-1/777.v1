@@ -42,8 +42,4 @@ public class Trade extends Timestamped {
         this.price=price;
         this.totalPrice=totalPrice;
     }
-
-
-
-
 }
