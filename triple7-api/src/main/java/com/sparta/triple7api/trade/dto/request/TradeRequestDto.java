@@ -6,4 +6,5 @@ import lombok.Getter;
 public class TradeRequestDto {
     private Long amount;
     private Long price;
+    private String tradeType;
 }

@@ -1,5 +1,6 @@
 package com.sparta.triple7api.trade.entity;
 
+import com.sparta.triple7api.crypto.entity.Crypto;
 import com.sparta.triple7api.trade.enums.TradeType;
 import com.sparta.triple7api.common.entity.Timestamped;
 import com.sparta.triple7api.user.entity.User;
@@ -18,10 +19,11 @@ public class Trade extends Timestamped {
     @Enumerated
     private TradeType tradeType;
 
+    @Column(name = "amount")
     private Long amount;
-
+    @Column(name = "price")
     private Long price;
-
+    @Column(name = "totalPrice")
     private Long totalPrice;
 
     @ManyToOne
@@ -32,9 +34,15 @@ public class Trade extends Timestamped {
     @JoinColumn(name = "coin_id")
     private Crypto crypto;
 
-    void setTotalPrice(){
-        this.totalPrice = this.amount * this.price;
+    public Trade(User user, Crypto crypto, String tradeType, Long amount, Long price,Long totalPrice) {
+        this.user=user;
+        this.crypto=crypto;
+        this.tradeType = TradeType.valueOf(tradeType);
+        this.amount=amount;
+        this.price=price;
+        this.totalPrice=totalPrice;
     }
+
 
 
 
