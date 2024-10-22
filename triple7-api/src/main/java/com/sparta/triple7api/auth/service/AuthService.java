@@ -11,6 +11,7 @@ import com.sparta.triple7api.common.exception.InvalidRequestException;
 import com.sparta.triple7api.user.entity.User;
 import com.sparta.triple7api.user.repository.UserRepository;
 import com.sparta.triple7api.user.service.UserService;
+import com.sparta.triple7api.wallet.service.WalletService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -29,6 +30,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final StringRedisTemplate redisTemplate;
+    private final WalletService walletService;
 
     @Transactional
     public SignupResponse signup(SignupRequest request) {
@@ -39,6 +41,7 @@ public class AuthService {
         User newUser = User.of(request.getEmail(), encodedPassword, request.getName());
 
         User savedUser = userRepository.save(newUser);
+        walletService.createWallet(savedUser);
         String token = jwtUtil.createToken(savedUser.getId(), savedUser.getEmail());
 
         jwtUtil.addJwtToCookie(token);
