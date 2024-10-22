@@ -1,9 +1,13 @@
 package com.sparta.triple7api.user.entity;
 
 import com.sparta.triple7api.common.entity.Timestamped;
+import com.sparta.triple7api.subscribe.entity.Following;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -26,6 +30,9 @@ public class User extends Timestamped {
 
     @Column(nullable = false)
     private boolean userStatus = true; // 유저 상태 (true: 활성, false: 탈퇴)
+
+    @OneToMany(mappedBy = "followingUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Following> followingList = new ArrayList<>();
 
     // 생성자: 필수 필드만 포함
     private User(String email, String password, String name) {
