@@ -1,6 +1,6 @@
 package com.sparta.triple7api.user.dto.response;
 
-import com.sparta.sal.domain.user.entity.User;
+import com.sparta.triple7api.user.entity.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

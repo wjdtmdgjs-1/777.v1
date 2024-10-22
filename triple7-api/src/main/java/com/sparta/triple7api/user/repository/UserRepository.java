@@ -1,6 +1,6 @@
 package com.sparta.triple7api.user.repository;
 
-import com.sparta.sal.domain.user.entity.User;
+import com.sparta.triple7api.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

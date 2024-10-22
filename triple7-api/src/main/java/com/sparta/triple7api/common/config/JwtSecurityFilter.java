@@ -1,7 +1,6 @@
 package com.sparta.triple7api.common.config;
 
-import com.sparta.sal.common.dto.AuthUser;
-import com.sparta.sal.domain.user.enums.UserRole;
+import com.sparta.triple7api.common.dto.AuthUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -41,23 +40,22 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
                 Claims claims = jwtUtil.extractClaims(jwt);
                 String userId = claims.getSubject();
                 String email = claims.get("email", String.class);
-                UserRole userRole = UserRole.of(claims.get("userRole", String.class));
 
                 if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    AuthUser authUser = AuthUser.from(Long.parseLong(userId), email, userRole);
+                    AuthUser authUser = AuthUser.from(Long.parseLong(userId), email);
 
                     JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(authUser);
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
             } catch (SecurityException | MalformedJwtException e) {
-                log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.", e);
-                httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않는 JWT 서명입니다.");
+                log.error("Invalid JWT signature, 유효하지 않은 JWT 서명입니다.", e);
+                httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않은 JWT 서명입니다.");
             } catch (ExpiredJwtException e) {
-                log.error("Expired JWT token, 만료된 JWT token 입니다.", e);
+                log.error("Expired JWT token, 만료된 JWT 토큰입니다.", e);
                 httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "만료된 JWT 토큰입니다.");
             } catch (UnsupportedJwtException e) {
-                log.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.", e);
+                log.error("Unsupported JWT token, 지원되지 않는 JWT 토큰입니다.", e);
                 httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "지원되지 않는 JWT 토큰입니다.");
             } catch (Exception e) {
                 log.error("Internal server error", e);

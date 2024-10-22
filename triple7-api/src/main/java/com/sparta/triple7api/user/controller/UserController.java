@@ -1,10 +1,10 @@
 package com.sparta.triple7api.user.controller;
 
-import com.sparta.sal.common.dto.AuthUser;
-import com.sparta.sal.domain.user.dto.request.UserChangePasswordRequest;
-import com.sparta.sal.domain.user.dto.request.UserWithdrawRequest;
-import com.sparta.sal.domain.user.dto.response.UserResponse;
-import com.sparta.sal.domain.user.service.UserService;
+import com.sparta.triple7api.common.dto.AuthUser;
+import com.sparta.triple7api.user.dto.request.UserChangePasswordRequest;
+import com.sparta.triple7api.user.dto.request.UserWithdrawRequest;
+import com.sparta.triple7api.user.dto.response.UserResponse;
+import com.sparta.triple7api.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -36,10 +36,5 @@ public class UserController {
             @RequestBody UserChangePasswordRequest userChangePasswordRequest
     ) {
         userService.changePassword(authUser, userChangePasswordRequest);
-    }
-
-    @PutMapping("/users/slack")
-    public void updateSlackId(@AuthenticationPrincipal AuthUser authUser) {
-        userService.updateSlackId(authUser);
     }
 }

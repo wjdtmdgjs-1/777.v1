@@ -1,15 +1,9 @@
 package com.sparta.triple7api.user.entity;
 
-import com.sparta.sal.common.dto.AuthUser;
-import com.sparta.sal.common.entity.Timestamped;
-import com.sparta.sal.domain.member.entity.Member;
-import com.sparta.sal.domain.user.enums.UserRole;
+import com.sparta.triple7api.common.entity.Timestamped;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Entity
@@ -21,53 +15,37 @@ public class User extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, length = 256)
+    @Column(unique = true, length = 256, nullable = false)
     private String email;
 
+    @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
     private String name;
 
-    private String slackId;
+    @Column(nullable = false)
+    private boolean userStatus = true; // 유저 상태 (true: 활성, false: 탈퇴)
 
-    @Enumerated(EnumType.STRING)
-    private UserRole userRole;
-
-    private Boolean userStatus = true;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Member> memberList = new ArrayList<>();
-
-    private User(String email, String password, UserRole userRole, String name) {
+    // 생성자: 필수 필드만 포함
+    private User(String email, String password, String name) {
         this.email = email;
         this.password = password;
-        this.userRole = userRole;
         this.name = name;
     }
 
-    public static User from(String email, String password, UserRole userRole, String name) {
-        return new User(email, password, userRole, name);
+    // 정적 팩토리 메서드
+    public static User of(String email, String password, String name) {
+        return new User(email, password, name);
     }
 
-    private User(Long id, String email, UserRole userRole) {
-        this.id = id;
-        this.email = email;
-        this.userRole = userRole;
+    // 비밀번호 변경 기능
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
     }
 
-    public static User fromAuthUser(AuthUser authUser) {
-        return new User(authUser.getId(), authUser.getEmail(), UserRole.of(authUser.getAuthorities().stream().toList().get(0).getAuthority()));
-    }
-
+    // 유저 탈퇴 처리
     public void withdrawUser() {
         this.userStatus = false;
-    }
-
-    public void changePassword(String password) {
-        this.password = password;
-    }
-
-    public void updateSlackID(String slackId) {
-        this.slackId = slackId;
     }
 }

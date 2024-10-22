@@ -1,12 +1,12 @@
 package com.sparta.triple7api.auth.controller;
 
-import com.sparta.sal.domain.auth.dto.request.FindPasswordRequest;
-import com.sparta.sal.domain.auth.dto.request.ResetPasswordRequest;
-import com.sparta.sal.domain.auth.dto.request.SigninRequest;
-import com.sparta.sal.domain.auth.dto.request.SignupRequest;
-import com.sparta.sal.domain.auth.dto.response.SigninResponse;
-import com.sparta.sal.domain.auth.dto.response.SignupResponse;
-import com.sparta.sal.domain.auth.service.AuthService;
+import com.sparta.triple7api.auth.dto.request.FindPasswordRequest;
+import com.sparta.triple7api.auth.dto.request.ResetPasswordRequest;
+import com.sparta.triple7api.auth.dto.request.SigninRequest;
+import com.sparta.triple7api.auth.dto.request.SignupRequest;
+import com.sparta.triple7api.auth.dto.response.SigninResponse;
+import com.sparta.triple7api.auth.dto.response.SignupResponse;
+import com.sparta.triple7api.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
