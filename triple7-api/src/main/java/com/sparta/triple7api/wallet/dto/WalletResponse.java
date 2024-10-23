@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 public class WalletResponse {
 
     private final Long id;
-    private final Long amount;
+    private final Double amount;
     private final String cryptoSymbol;
     private final String userEmail;
 

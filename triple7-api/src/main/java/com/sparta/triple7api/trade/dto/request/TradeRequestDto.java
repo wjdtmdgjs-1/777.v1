@@ -4,7 +4,8 @@ import lombok.Getter;
 
 @Getter
 public class TradeRequestDto {
-    private Long amount;
+    private Double amount;
     private Long price;
     private String tradeType;
+    private String tradeFor;
 }

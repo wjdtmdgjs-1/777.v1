@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "following")
 @NoArgsConstructor
-public class Following extends Timestamped {
+public class Subscriptions extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,12 +32,12 @@ public class Following extends Timestamped {
     @Column(name = "crypto_amount")
     private Double cryptoAmount;
 
-    public static Following of(User followingUser, User followerUser, Crypto crypto, Double cryptoAmount) {
-        Following following = new Following();
-        following.followingUser = followingUser;
-        following.followerUser = followerUser;
-        following.crypto = crypto;
-        following.cryptoAmount = cryptoAmount;
-        return following;
+    public static Subscriptions of(User followingUser, User followerUser, Crypto crypto, Double cryptoAmount) {
+        Subscriptions subscriptions = new Subscriptions();
+        subscriptions.followingUser = followingUser;
+        subscriptions.followerUser = followerUser;
+        subscriptions.crypto = crypto;
+        subscriptions.cryptoAmount = cryptoAmount;
+        return subscriptions;
     }
 }

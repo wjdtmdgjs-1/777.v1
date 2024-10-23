@@ -25,7 +25,15 @@ public class TradeController {
         return ResponseEntity.ok(tradeService.postTrade(authUser,cryptoId,tradeRequestDto));
     }
 
-    @PostMapping("/")
+    @PostMapping("/{cryptoId}/trades/subscriptions/{subscritionsId}")
+    public ResponseEntity<TradeResponseDto> postSubscriptionsTrade(@AuthenticationPrincipal AuthUser authUser,
+                                                                   @PathVariable long cryptoId,
+                                                                   @PathVariable long subscritionsId,
+                                                                   @RequestBody TradeRequestDto tradeRequestDto){
+        return ResponseEntity.ok(tradeService.postSubscriptionsTrade(authUser,cryptoId,subscritionsId,tradeRequestDto));
+    }
+
+
 
     @GetMapping("/{cryptoId}/trades")
     public ResponseEntity<List<TradeResponseDto>> getTradeList(@AuthenticationPrincipal AuthUser authUser,

@@ -17,7 +17,7 @@ public class Wallet extends Timestamped {
     private Long id;
 
     @Column(name = "ammount")
-    private Long amount;
+    private Double amount;
 
     @Column(name = "crypto_symbol")
     private String cryptoSymbol;
@@ -29,15 +29,19 @@ public class Wallet extends Timestamped {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Wallet(User user, Long amount, String cryptoSymbol,Long cash) {
+    public Wallet(User user, Double amount, String cryptoSymbol,Long cash) {
         this.user = user;
         this.amount = amount;
         this.cryptoSymbol = cryptoSymbol;
         this.cash=cash;
     }
 
-    public void update(long l, long cash) {
+    public void update(Double l, long cash) {
         this.amount=l;
         this.cash=cash;
+    }
+
+    public void updateCash(double v) {
+        this.cash=this.cash+ (long)v;
     }
 }
