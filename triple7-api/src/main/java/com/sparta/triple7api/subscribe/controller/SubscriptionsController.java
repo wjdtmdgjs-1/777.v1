@@ -25,6 +25,7 @@ public class SubscriptionsController {
         return ResponseEntity.ok(subscriptionsService.subscribe(authUser, followingRequest));
     }
 
+
     @GetMapping("/following")
     public ResponseEntity<FollowingListResponse> getFollowing(
             @AuthenticationPrincipal AuthUser authUser) {

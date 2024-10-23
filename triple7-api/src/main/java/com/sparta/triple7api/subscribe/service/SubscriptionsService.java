@@ -4,8 +4,8 @@ import com.sparta.triple7api.common.dto.AuthUser;
 import com.sparta.triple7api.crypto.entity.Crypto;
 import com.sparta.triple7api.crypto.repository.CryptoRepository;
 import com.sparta.triple7api.subscribe.dto.*;
-import com.sparta.triple7api.subscribe.entity.Following;
-import com.sparta.triple7api.subscribe.repository.FollowingRepository;
+import com.sparta.triple7api.subscribe.entity.Subscriptions;
+import com.sparta.triple7api.subscribe.repository.SubscriptionsRepository;
 import com.sparta.triple7api.user.entity.User;
 import com.sparta.triple7api.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class SubscriptionsService {
 
-    private final FollowingRepository followingRepository;
+    private final SubscriptionsRepository subscriptionsRepository;
     private final UserRepository userRepository;
     private final CryptoRepository cryptoRepository;
 
@@ -32,16 +32,16 @@ public class SubscriptionsService {
         User followingUser = userRepository.findById(followingRequest.getFollowingUserId())
                 .orElseThrow(() -> new IllegalArgumentException("없는 유저입니다."));
 
-        Following following = Following.of(followingUser, user, crypto, followingRequest.getCryptoAmount());
+        Subscriptions subscriptions = Subscriptions.of(followingUser, user, crypto, followingRequest.getCryptoAmount());
 
-        followingRepository.save(following);
+        subscriptionsRepository.save(subscriptions);
         
-        return new FollowingResponse(following.getFollowingUser().getName(), following.getCrypto().getSymbol());
+        return new FollowingResponse(subscriptions.getFollowingUser().getName(), subscriptions.getCrypto().getSymbol());
     }
 
     public FollowingListResponse getFollowing(AuthUser authUser) {
         return new FollowingListResponse(
-                followingRepository.findAllByFollowerUserId(authUser.getId())
+                subscriptionsRepository.findAllByFollowerUserId(authUser.getId())
                         .stream()
                         .map(f -> new FollowingResponse(f.getFollowingUser().getName(), f.getCrypto().getSymbol()))
                         .toList());
@@ -49,7 +49,7 @@ public class SubscriptionsService {
 
     public FollowerListResponse getFollower(AuthUser authUser) {
         return new FollowerListResponse(
-                followingRepository.findAllByFollowingUserId(authUser.getId())
+                subscriptionsRepository.findAllByFollowingUserId(authUser.getId())
                         .stream()
                         .map(f -> new FollowerResponse(f.getFollowerUser().getName(), f.getCrypto().getSymbol()))
                         .toList());
